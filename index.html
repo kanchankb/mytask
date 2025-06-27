@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Task Manager | Productivity Tool</title>
+    <meta name="description" content="Professional task management tool to organize your daily workflow and boost productivity">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --light-gray: #e9ecef;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8faff;
+            color: var(--dark-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--gray-color);
+            margin-bottom: 2rem;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+        
+        .date-display {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+            text-align: center;
+            margin-bottom: 1.8rem;
+            padding: 1rem;
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(67, 97, 238, 0.1);
+        }
+        
+        .input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .task-editor {
+            width: 100%;
+            min-height: 300px;
+            max-height: 500px;
+            padding: 1.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: none;
+            transition: var(--transition);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+            background-color: white;
+            background-image: linear-gradient(to bottom, transparent 95%, rgba(67, 97, 238, 0.05) 100%);
+            background-size: 100% 2rem;
+            background-position-y: 1.5rem;
+            animation: pulseBackground 8s infinite alternate;
+        }
+        
+        @keyframes pulseBackground {
+            0% {
+                background-color: white;
+            }
+            100% {
+                background-color: rgba(248, 250, 255, 0.5);
+            }
+        }
+        
+        .task-editor:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.15);
+            background-image: linear-gradient(to bottom, transparent 95%, rgba(67, 97, 238, 0.08) 100%);
+            animation: none;
+        }
+        
+        .input-label {
+            position: absolute;
+            top: -10px;
+            left: 12px;
+            background: white;
+            padding: 0 8px;
+            font-size: 0.85rem;
+            color: var(--gray-color);
+            font-weight: 500;
+            z-index: 1;
+            animation: labelFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes labelFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.8rem;
+        }
+        
+        button {
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        
+        #saveButton {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        #saveButton:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        #saveButton:active {
+            transform: translateY(0);
+        }
+        
+        #viewButton {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--light-gray);
+        }
+        
+        #viewButton:hover {
+            background-color: rgba(67, 97, 238, 0.03);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .animation-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .lottie-animation {
+            width: 140px;
+            height: 140px;
+        }
+        
+        .task-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray-color);
+        }
+        
+        .char-count {
+            text-align: right;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 500;
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background-color: var(--success-color);
+        }
+        
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+        
+        /* Formatting toolbar */
+        .formatting-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: rgba(248, 249, 250, 0.7);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--light-gray);
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .format-btn {
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            padding: 0.5rem 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+        }
+        
+        .format-btn:hover {
+            background-color: var(--light-gray);
+            transform: scale(1.05);
+        }
+        
+        .format-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+        
+        .format-btn i {
+            margin-right: 0.3rem;
+        }
+        
+        .divider {
+            width: 1px;
+            background-color: var(--light-gray);
+            margin: 0 0.3rem;
+        }
+        
+        /* Custom scrollbar for task editor */
+        .task-editor::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .task-editor::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 10px;
+        }
+        
+        .task-editor::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            border: 2px solid var(--light-gray);
+        }
+        
+        /* Floating animation for the input container */
+        .input-container:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .card {
+                padding: 1.8rem;
+            }
+            
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .lottie-animation {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .formatting-toolbar {
+                gap: 0.3rem;
+            }
+            
+            .format-btn {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .task-editor {
+                min-height: 250px;
+                max-height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .task-editor {
+                min-height: 200px;
+                max-height: 350px;
+                padding: 1rem;
+            }
+            
+            .formatting-toolbar {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="animation-container">
+                <lottie-player class="lottie-animation" src="https://assets10.lottiefiles.com/packages/lf20_vybwn7df.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            </div>
+            
+            <h1>Daily Task Manager</h1>
+            <p class="subtitle">Organize your workflow and boost productivity</p>
+            
+            <div class="date-display" id="dateDisplay"></div>
+            
+            <div class="formatting-toolbar">
+                <button class="format-btn" data-command="bold" title="Bold (Ctrl+B)"><i class="fas fa-bold"></i></button>
+                <button class="format-btn" data-command="italic" title="Italic (Ctrl+I)"><i class="fas fa-italic"></i></button>
+                <button class="format-btn" data-command="underline" title="Underline (Ctrl+U)"><i class="fas fa-underline"></i></button>
+                <div class="divider"></div>
+                <button class="format-btn" data-command="insertUnorderedList" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                <button class="format-btn" data-command="insertOrderedList" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                <div class="divider"></div>
+                <button class="format-btn" data-command="indent" title="Indent"><i class="fas fa-indent"></i></button>
+                <button class="format-btn" data-command="outdent" title="Outdent"><i class="fas fa-outdent"></i></button>
+                <div class="divider"></div>
+                <button class="format-btn" data-command="createLink" title="Insert Link"><i class="fas fa-link"></i></button>
+                <button class="format-btn" data-command="insertHorizontalRule" title="Insert Divider"><i class="fas fa-minus"></i></button>
+                <div class="divider"></div>
+                <button class="format-btn" data-command="undo" title="Undo (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+                <button class="format-btn" data-command="redo" title="Redo (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+                <div class="divider"></div>
+                <button class="format-btn" data-command="clearFormatting" title="Clear Formatting"><i class="fas fa-eraser"></i></button>
+            </div>
+            
+            <div class="input-container">
+                <label class="input-label">Today's Tasks</label>
+                <div id="taskEditor" contenteditable="true" class="task-editor"></div>
+                <div class="task-stats">
+                    <div class="task-count" id="taskCount">0 tasks</div>
+                    <div class="char-count" id="charCount">0/2000 characters</div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button id="saveButton">
+                    <i class="fas fa-save"></i>
+                    Save Tasks
+                </button>
+                <button id="viewButton">
+                    <i class="fas fa-tasks"></i>
+                    Task History
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Display current date and day
+        const now = new Date();
+        const todayDateString = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('dateDisplay').textContent = todayDateString;
+        
+        // Rich text editor functionality
+        const taskEditor = document.getElementById('taskEditor');
+        const charCount = document.getElementById('charCount');
+        const taskCount = document.getElementById('taskCount');
+        const formatButtons = document.querySelectorAll('.format-btn');
+        
+        // Set default placeholder text
+        taskEditor.innerHTML = '<p>• Enter your prioritized tasks for today<br>• Be specific and actionable (e.g., "Complete project proposal draft" instead of "Work on project")<br>• Break large tasks into smaller, manageable steps<br>• Estimate time required for each task</p>';
+        
+        // Remove placeholder when user starts typing
+        taskEditor.addEventListener('focus', function() {
+            if (this.innerHTML === '<p>• Enter your prioritized tasks for today<br>• Be specific and actionable (e.g., "Complete project proposal draft" instead of "Work on project")<br>• Break large tasks into smaller, manageable steps<br>• Estimate time required for each task</p>') {
+                this.innerHTML = '';
+            }
+        });
+        
+        // Formatting buttons functionality
+        formatButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const command = this.dataset.command;
+                handleFormatting(command);
+            });
+        });
+        
+        function handleFormatting(command) {
+            // Save current selection
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            
+            // Special cases for custom commands
+            if (command === 'indent') {
+                document.execCommand('insertText', false, '    ');
+                return;
+            }
+            
+            if (command === 'outdent') {
+                const currentText = range.startContainer.textContent;
+                const startOffset = range.startOffset;
+                
+                if (startOffset >= 4 && currentText.substring(startOffset - 4, startOffset) === '    ') {
+                    range.setStart(range.startContainer, startOffset - 4);
+                    range.deleteContents();
+                }
+                return;
+            }
+            
+            if (command === 'clearFormatting') {
+                document.execCommand('removeFormat', false, null);
+                document.execCommand('unlink', false, null);
+                return;
+            }
+            
+            // Default execCommand for standard formatting
+            document.execCommand(command, false, null);
+            
+            // For link command, prompt for URL
+            if (command === 'createLink') {
+                const url = prompt('Enter the URL:', 'http://');
+                if (url) {
+                    document.execCommand('createLink', false, url);
+                }
+            }
+            
+            // Restore focus to editor
+            taskEditor.focus();
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Check for Ctrl key combinations
+            if (e.ctrlKey && !e.altKey && !e.metaKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'b':
+                        e.preventDefault();
+                        document.execCommand('bold', false, null);
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        document.execCommand('italic', false, null);
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        document.execCommand('underline', false, null);
+                        break;
+                    case 'z':
+                        if (!e.shiftKey) {
+                            e.preventDefault();
+                            document.execCommand('undo', false, null);
+                        }
+                        break;
+                    case 'y':
+                        e.preventDefault();
+                        document.execCommand('redo', false, null);
+                        break;
+                }
+            }
+            
+            // Tab key for indentation
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    handleFormatting('outdent');
+                } else {
+                    handleFormatting('indent');
+                }
+            }
+        });
+        
+        // Character and task count
+        taskEditor.addEventListener('input', function() {
+            updateCounters();
+        });
+        
+        function updateCounters() {
+            // Get text content (without HTML tags)
+            const text = taskEditor.innerText || taskEditor.textContent;
+            const charLength = text.length;
+            charCount.textContent = `${charLength}/2000 characters`;
+            
+            // Count tasks (lines starting with bullet points or numbers)
+            const tasks = text.split('\n').filter(line => {
+                const trimmed = line.trim();
+                return trimmed.startsWith('•') || trimmed.startsWith('-') || /^\d+\./.test(trimmed);
+            }).length;
+            
+            taskCount.textContent = `${tasks} ${tasks === 1 ? 'task' : 'tasks'}`;
+            
+            // Limit to 2000 characters
+            if (charLength > 2000) {
+                // Truncate content if exceeds limit
+                if (text.length > 2000) {
+                    const newText = text.substring(0, 2000);
+                    taskEditor.innerHTML = newText;
+                    
+                    // Move cursor to end
+                    const range = document.createRange();
+                    range.selectNodeContents(taskEditor);
+                    range.collapse(false);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+                charCount.textContent = "2000/2000 characters (limit reached)";
+                charCount.style.color = "var(--warning-color)";
+            } else {
+                charCount.style.color = "var(--gray-color)";
+            }
+        }
+        
+        // Save tasks to localStorage
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const tasks = taskEditor.innerHTML.trim();
+            if (tasks === '' || tasks === '<p><br></p>' || tasks === '<p></p>') {
+                showToast('Please enter some tasks before saving.', 'warning');
+                return;
+            }
+            
+            // Get existing tasks or initialize empty array
+            const allTasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
+            
+            // Check if we already have tasks for today
+            const todayTasksIndex = allTasks.findIndex(task => 
+                task.date === todayDateString
+            );
+            
+            if (todayTasksIndex !== -1) {
+                // Append to existing today's tasks
+                const existingTasks = allTasks[todayTasksIndex].tasks;
+                allTasks[todayTasksIndex].tasks = existingTasks + '<hr>' + tasks;
+                allTasks[todayTasksIndex].timestamp = now.getTime();
+            } else {
+                // Create new task entry
+                const taskEntry = {
+                    date: todayDateString,
+                    timestamp: now.getTime(),
+                    tasks: tasks,
+                    completed: false
+                };
+                allTasks.unshift(taskEntry);
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('dailyTasks', JSON.stringify(allTasks));
+            
+            // Clear input
+            taskEditor.innerHTML = '';
+            charCount.textContent = "0/2000 characters";
+            taskCount.textContent = "0 tasks";
+            
+            // Show success animation
+            const animationContainer = document.querySelector('.animation-container');
+            animationContainer.innerHTML = `
+                <lottie-player class="lottie-animation" src="https://assets1.lottiefiles.com/packages/lf20_7xr1tspf.json" background="transparent" speed="1" loop autoplay></lottie-player>
+            `;
+            
+            showToast('Tasks saved successfully!', 'success');
+            
+            setTimeout(() => {
+                animationContainer.innerHTML = `
+                    <lottie-player class="lottie-animation" src="https://assets10.lottiefiles.com/packages/lf20_vybwn7df.json" background="transparent" speed="1" loop autoplay></lottie-player>
+                `;
+            }, 2000);
+        });
+        
+        // Navigate to view page
+        document.getElementById('viewButton').addEventListener('click', function() {
+            window.location.href = 'display.html';
+        });
+        
+        // Toast notification function
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            
+            // Add appropriate class and icon based on type
+            if (type === 'warning') {
+                toast.classList.add('warning');
+                toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            } else {
+                toast.classList.add('success');
+                toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            }
+            
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Focus on editor when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            taskEditor.focus();
+            
+            // Add subtle animation to the input container
+            setTimeout(() => {
+                document.querySelector('.input-container').style.transform = 'translateY(0)';
+            }, 300);
+        });
+        
+        // Add floating effect to the input label
+        setInterval(() => {
+            const label = document.querySelector('.input-label');
+            label.style.animation = 'labelFloat 3s ease-in-out infinite';
+        }, 5000);
+    </script>
+</body>
+</html>
